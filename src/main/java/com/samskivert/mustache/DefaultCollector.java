@@ -31,6 +31,12 @@ public class DefaultCollector extends BasicCollector
         if (m != null) {
             return new Mustache.VariableFetcher() {
                 public Object get (Object ctx, String name) throws Exception {
+                    if (name.contains(",")) {
+                        String[] args = name.split(",");
+                        if (args.length == 3) {
+                            return m.invoke(ctx, args[1], args[2]);
+                        }
+                    }
                     return m.invoke(ctx);
                 }
             };
@@ -94,9 +100,17 @@ public class DefaultCollector extends BasicCollector
     }
 
     protected Method getMethodOn (Class<?> clazz, String name) {
-        Method m;
+        Method m = null;
         try {
-            m = clazz.getDeclaredMethod(name);
+            //get method with 2 args name(String, String)
+            if (name.contains(",")) {
+                String[] args = name.split(",");
+                if (args.length == 3) {
+                    m = clazz.getDeclaredMethod(args[0], String.class, String.class);
+                }
+            } else {
+                m = clazz.getDeclaredMethod(name);
+            }
             if (!m.getReturnType().equals(void.class)) return makeAccessible(m);
         } catch (Exception e) {
             // fall through

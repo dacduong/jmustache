@@ -266,4 +266,9 @@ public class MustacheTest extends SharedTests
         test("k1v1k2v2", "{{#map.entrySet}}{{key}}{{value}}{{/map.entrySet}}",
              context("map", data));
     }
+
+    //My test -
+    @Test public void testMethodArg () {
+        test("this is foo value1234", "{{getFooValue,4,0}}", new MyObject());
+    }
 }

@@ -1,3 +1,25 @@
+Additional Features
+===================
+Support Object method with 2 arguments
+```java
+public class MyObject {
+    private String foo = "this is foo value";
+
+    public String getFoo() {
+        return foo;
+    }
+
+    public String getFooValue(int length, int align) {
+        return foo + "1234";
+    }
+}
+```
+```
+    @Test public void testMethodArg () {
+        test("bar", "{{getFooValue,4,0}}", new MyObject());
+    }
+```
+
 This is a Java implementation of the [Mustache template language](http://mustache.github.com/).
 There exists [another Java implementation of Mustache](http://github.com/spullara/mustache.java),
 but the motivations for this version are sufficiently different as to justify (in the author's
