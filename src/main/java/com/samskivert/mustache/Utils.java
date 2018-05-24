@@ -66,8 +66,7 @@ public class Utils {
             if (source instanceof Date) {
                 SimpleDateFormat fmt = new SimpleDateFormat(format);
                 st = fmt.format((Date) source);
-            } else if (source instanceof BigDecimal || source instanceof Long || source instanceof Integer ||
-                       source instanceof Double || source instanceof Number) {
+            } else if (source instanceof Number) {
                 DecimalFormat df = new DecimalFormat(format);
                 st = df.format(source);
             } else if (source instanceof LocalDateTime) {
