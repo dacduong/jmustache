@@ -1,13 +1,16 @@
 Additional Features
 ===================
 Support Object method with arguments  
+```
 {{foo,{separator},l=10&t=_&a=1&f=yyyyMMdd}}  
+
 foo: field or method or getter  
 separator: optional, default "&"
 l = length  
 a = alignment optional, default left - 0:left, 1: right, 2: center
 t = token: optional, default is a space " "
 f = format: Decimal format for Number type (#0.00 or #.##) or Date/DateTime format
+```
 
 Test case  
 ```java
