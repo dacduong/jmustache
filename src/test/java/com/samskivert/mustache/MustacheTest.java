@@ -6,7 +6,11 @@ package com.samskivert.mustache;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -269,6 +273,54 @@ public class MustacheTest extends SharedTests
 
     //My test -
     @Test public void testMethodArg () {
-        test("this is foo value1234", "{{getFooValue,4,0}}", new MyObject());
+        Object obj = new Object() {
+            private String foo = "foo value";
+
+            public String getFoo() {
+                return foo;
+            }
+
+            private BigDecimal bigDecimal = new BigDecimal(2.5);
+
+            public Long aLong = 123L;
+
+            private Date date = new Date(1527131159000L);//2018-05-24T03:05:59+00:00
+
+            private LocalDateTime localDateTime = LocalDateTime.of(2018, 5, 24,11,8,20);
+
+            public ZonedDateTime zonedDateTime = ZonedDateTime.of(2018, 5, 24, 11, 8, 20, 50, ZoneId.systemDefault());
+
+            public BigDecimal getBigDecimal() {
+                return bigDecimal;
+            }
+
+            public Date getDate() {
+                return date;
+            }
+
+            public LocalDateTime getLocalDateTime() {
+                return localDateTime;
+            }
+        };
+        test("foo value__", "{{foo,l=11&t=_&a=0}}", obj);
+        test("___foo value", "{{foo,l=12&t=_&a=1}}", obj);
+        test("___foo value___", "{{foo,l=15&t=_&a=2}}", obj);
+        test("__foo value___", "{{foo,l=14&t=_&a=2}}", obj);
+
+        test("foo value  ", "{{foo,l=11&a=0}}", obj);
+        test("   foo value", "{{foo,l=12&a=1}}", obj);
+        test("   foo value   ", "{{foo,l=15&a=2}}", obj);
+        test("  foo value   ", "{{foo,l=14&a=2}}", obj);
+
+        //not default & separator ;
+        test("foo value__", "{{foo,;,l=11;t=_;a=0}}", obj);
+        test("__foo value___", "{{foo,;,l=14;t=_;a=2}}", obj);
+
+        test("______2.50", "{{bigDecimal,l=10&t=_&a=1&f=0.00}}", obj);
+        test("____123.00", "{{aLong,l=10&t=_&a=1&f=0.00}}", obj);
+        test("_20180524110559_", "{{date,l=16&t=_&a=2&f=yyyyMMddHHmmss}}", obj);
+        test("_20180524110820_", "{{localDateTime,l=16&t=_&a=2&f=yyyyMMddHHmmss}}", obj);
+        test("_20180524110820_", "{{zonedDateTime,l=16&t=_&a=2&f=yyyyMMddHHmmss}}", obj);
+
     }
 }

@@ -32,9 +32,10 @@ public class DefaultCollector extends BasicCollector
             return new Mustache.VariableFetcher() {
                 public Object get (Object ctx, String name) throws Exception {
                     if (name.contains(",")) {
+                        int pos = name.indexOf(",");
                         String[] args = name.split(",");
-                        if (args.length == 3) {
-                            return m.invoke(ctx, args[1], args[2]);
+                        if (args.length > 1) {
+                            return Utils.format(m.invoke(ctx), name.substring(pos + 1));
                         }
                     }
                     return m.invoke(ctx);
@@ -47,6 +48,13 @@ public class DefaultCollector extends BasicCollector
         if (f != null) {
             return new Mustache.VariableFetcher() {
                 public Object get (Object ctx, String name) throws Exception {
+                    if (name.contains(",")) {
+                        int pos = name.indexOf(",");
+                        String[] args = name.split(",");
+                        if (args.length > 1) {
+                            return Utils.format(f.get(ctx), name.substring(pos + 1));
+                        }
+                    }
                     return f.get(ctx);
                 }
             };
@@ -104,13 +112,9 @@ public class DefaultCollector extends BasicCollector
         try {
             //get method with 2 args name(String, String)
             if (name.contains(",")) {
-                String[] args = name.split(",");
-                if (args.length == 3) {
-                    m = clazz.getDeclaredMethod(args[0], String.class, String.class);
-                }
-            } else {
-                m = clazz.getDeclaredMethod(name);
+                name = name.split(",")[0];
             }
+            m = clazz.getDeclaredMethod(name);
             if (!m.getReturnType().equals(void.class)) return makeAccessible(m);
         } catch (Exception e) {
             // fall through
@@ -143,6 +147,10 @@ public class DefaultCollector extends BasicCollector
     protected Field getField (Class<?> clazz, String name) {
         Field f;
         try {
+            //get method with 2 args name(String, String)
+            if (name.contains(",")) {
+                name = name.split(",")[0];
+            }
             f = clazz.getDeclaredField(name);
             if (!f.isAccessible()) {
                 f.setAccessible(true);
